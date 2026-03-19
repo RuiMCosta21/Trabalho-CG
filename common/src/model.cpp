@@ -1,0 +1,338 @@
+#define _USE_MATH_DEFINES
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cmath>
+#include <sstream>
+#include "model.hpp"
+#include "utils.hpp"
+
+void Model::clear() {
+	this->vertices.clear();
+	this->triangles.clear();
+}
+
+void Model::pushTriangle(int v1, int v2, int v3) {
+	std::cout << "added triangle " << v1 << " " << v2 << " " << v3 << "\n";
+	this->triangles.push_back(v1);
+	this->triangles.push_back(v2);
+	this->triangles.push_back(v3);
+}
+
+void Model::generateTriangle(float px, float py, float pz) {
+	this->clear();
+	this->vertices.push_back(std::move(std::make_unique<Vertex>(px, 0.0f, 0.0f)));
+	this->vertices.push_back(std::move(std::make_unique<Vertex>(0.0f, py, 0.0f)));
+	this->vertices.push_back(std::move(std::make_unique<Vertex>(0.0f, 0.0f, pz)));
+	this->triangles.push_back(0); this->triangles.push_back(1); this->triangles.push_back(2);
+}
+
+void Model::generatePlane(float dimension, int divisions) {
+	this->clear();
+	const int vertex_width = divisions + 1;
+	const float start_dim = dimension * 0.5f;
+	for(int row = 0; row < vertex_width; row++) {
+		float z = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			float x = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::move(std::make_unique<Vertex>(x, 0.0f, z)));
+			if (row != divisions && column != divisions) {
+				const int current = row * vertex_width + column;
+				this->pushTriangle(current, current + vertex_width, current + vertex_width + 1);
+				this->pushTriangle(current, current + vertex_width + 1, current + 1);
+			}
+		}
+	}
+}
+/* Comentários gerais:
+	variável 'mapped_devices' permite indexação por matriz ser overlapping
+		- vértice (0,0) da face traseira de uma box com 3 divisões, sendo o primeiro desta face, é na realidade o 17º do modelo
+	Quantidade significativa de vértices duplicados
+*/
+void Model::generateBox(float dimension, int divisions) {
+	this->clear();
+	const int vertex_width = divisions + 1, vertices_per_face = vertex_width * vertex_width;
+	const float start_dim = dimension * 0.5f;
+	float x, y, z;
+	int mapped_vertices = 0;
+	/* Face frontal
+		  3	+++++++++ 4
+			+  	  + +				- Ortogonal ao eixo z
+			+   +   +				- Vista de frente, por ordem de inicialização
+			+ *     +
+		  1	+++++++++ 2
+	*/
+	z = start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		y = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			x = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current, current + 1, current + vertex_width + 1);
+				this->pushTriangle(current, current + vertex_width + 1, current + vertex_width);
+			}
+		}
+	}
+	mapped_vertices += vertex_width * vertex_width;
+	/* Face traseira
+		  4	+++++++++ 3
+			+	  +	+				- Ortogonal ao eixo z
+			+	+	+				- Vista de frente, por ordem de inicialização
+			+ +     +
+		  2	+++++++++ 1
+	*/
+	z = -start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		y = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			x = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current+1, current, current + vertex_width);
+				this->pushTriangle(current+1, current + vertex_width, current + vertex_width + 1);
+			}
+		}
+	}
+	mapped_vertices += vertex_width * vertex_width;
+	/* Face superior
+		  1	+++++++++ 2
+			+	  +	+				- Ortogonal ao eixo y
+			+	+	+				- Vista de frente, por ordem de inicialização
+			+ +     +
+		  3	+++++++++ 4
+	*/
+	y = start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		z = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			x = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current + vertex_width, current + 1, current);
+				this->pushTriangle(current + vertex_width, current + vertex_width + 1, current + 1);
+			}
+		}
+	}
+	mapped_vertices += vertex_width * vertex_width;
+	/* Face inferior
+		  3	+++++++++ 4
+			+	  +	+				- Ortogonal ao eixo y
+			+	+	+				- Vista de frente, por ordem de inicialização
+			+ +     +
+		  1	+++++++++ 2
+	*/
+	y = -start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		z = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			x = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current, current + 1, current + vertex_width + 1);
+				this->pushTriangle(current, current + vertex_width + 1, current + vertex_width);
+			}
+		}
+	}
+	mapped_vertices += vertex_width * vertex_width;
+	/* Face direita
+		  4	+++++++++ 3
+			+	  +	+				- Ortogonal ao eixo x
+			+	+	+				- Vista de frente, por ordem de inicialização
+			+ +     +
+		  2	+++++++++ 1
+	*/
+	x = start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		y = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			z = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current + 1, current, current + vertex_width);
+				this->pushTriangle(current + 1, current + vertex_width, current + vertex_width + 1);
+			}
+		}
+	}
+	mapped_vertices += vertex_width * vertex_width;
+	/* Face esquerda
+		  3	+++++++++ 4
+			+	  +	+			- Ortogonal ao eixo x
+			+	+	+			- Vista de frente, por ordem de inicialização
+			+ +     +
+		  1	+++++++++ 2
+	*/
+	x = -start_dim;
+	for(int row = 0; row < vertex_width; row++) {
+		y = -start_dim + row * (dimension / divisions);
+		for(int column = 0; column < vertex_width; column++) {
+			z = -start_dim + column * (dimension / divisions);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			if (row != divisions && column != divisions) {
+				int current = mapped_vertices + row * vertex_width + column;
+				this->pushTriangle(current, current + 1, current + vertex_width + 1);
+				this->pushTriangle(current, current + vertex_width + 1, current + vertex_width);
+			}
+		}
+	}
+}
+
+/* Comentários
+	Iteração avalia as stacks dentro das slices, ou seja, a adição de vértices será da seguinte ordem
+		stack y+1	  2					4			---> alpha incrementa para a diretia
+		stack y		  1					3
+					slice x			slice x+1
+	É feito o unrolling dos loops tanto respectivos às stacks como das slices por duas razões:
+		- a última slice "fecha" o cone
+		- a última stack conecta-se não a outra stack mas ao pico do cone
+	Cálculo das alturas intermédias (ys) é trivial; radii são obtidos pela lei de triângulos semelhantes
+*/
+void Model::generateCone(const float radius, const float height, const int slices, const int stacks) {
+	this->clear();
+	this->vertices.push_back(std::make_unique<Vertex>(0.0f, 0.0f, 0.0f));
+	this->vertices.push_back(std::make_unique<Vertex>(0.0f, height, 0.0f));
+	std::vector<float> ys (stacks), radii (stacks);
+	for(int stack = 0; stack < stacks; stack++) {
+		ys[stack] = (height / stacks) * stack;
+		radii[stack] = radius * (1.0f - ys[stack] / height);
+	}
+	for(int slice = 0; slice < slices; slice++) {
+		const float alpha = ((2 * M_PI) / slices) * slice;
+		int current = 2 + slice * stacks;
+		for(int stack = 0; stack < stacks; stack++) {
+			current += stack;
+			const float x = radii[stack] * sin(alpha), z = radii[stack] * cos(alpha);
+			this->vertices.push_back(std::make_unique<Vertex>(x, ys[stack], z));
+			int stack_neighbor = current + stacks;
+			if (slice == slices - 1) { stack_neighbor = 2 + stack; }
+			if (stack == stacks - 1) {
+				this->pushTriangle(current, stack_neighbor, 1);
+			} else {
+				this->pushTriangle(current, stack_neighbor, current + 1);
+				this->pushTriangle(current + 1, stack_neighbor, stack_neighbor + 1);
+			}
+			current -= stack;
+		}
+		if (slice == slices - 1) {
+			this->pushTriangle(current, 0, 2);
+		} else {
+			this->pushTriangle(current, 0, current + stacks);
+		}
+	}
+}
+void Model::generateSphere(float radius, int slices, int stacks) {
+	this->clear();
+	this->vertices.push_back(std::make_unique<Vertex>(0.0f, radius, 0.0f));
+	this->vertices.push_back(std::make_unique<Vertex>(0.0f, -radius, 0.0f));
+	const int middle_vertices = stacks - 1;
+	for(int slice = 0; slice < slices; slice++) {
+		const float alpha = ((2 * M_PI) / slices) * slice;
+		const bool last_slice = (slice == slices - 1);
+		int current = 2 + middle_vertices * slice;
+		if (last_slice) { this->pushTriangle(current, 2, 0); }
+		else { this->pushTriangle(current, current + middle_vertices, 0); }
+		for(int stack = 1; stack < stacks; stack++) {
+			const float beta = (M_PI / 2) - ((M_PI * stack)/stacks);
+			float z = radius * cos(beta) * cos(alpha), x = radius * cos(beta) * sin(alpha), y = radius * sin(beta);
+			this->vertices.push_back(std::make_unique<Vertex>(x, y, z));
+			int stack_neighbor;
+			if (last_slice) { stack_neighbor = 2 + stack - 1; }
+			else { stack_neighbor = current + middle_vertices; }
+			if (stack == stacks - 1) {
+				this->pushTriangle(current, 1, stack_neighbor);
+			} else {
+				this->pushTriangle(current, current + 1, stack_neighbor + 1);
+				this->pushTriangle(current, stack_neighbor + 1, stack_neighbor);
+			}
+			current++;
+		}
+	}
+}
+
+void Model::writeToFile(const std::string& filename) {
+	std::string folder = "../models"; 
+	std::string fullpath = folder + "/" + filename;
+	std::ofstream file(fullpath);
+	if (!file.is_open()) {
+		std::cerr << "Error: Could not open file " << filename << " for writing.\n";
+		return;
+	}
+
+	const int numTriangles = this->triangles.size() / 3;
+	file << this->vertices.size() << ',' << numTriangles << '\n';
+
+	for (const auto& vertex : this->vertices) {
+		file << vertex->x << ',' << vertex->y << ',' << vertex->z << '\n';
+	}
+
+	for (size_t i = 0; i < this->triangles.size(); i += 3) {
+		file << this->triangles[i] << ',' << this->triangles[i + 1] << ',' << this->triangles[i + 2] << '\n';
+	}
+
+	file.close();
+}
+
+int Model::readFromFile(const std::string& filename) {
+	std::cout << "Reading file: " << filename << "\n";
+
+	std::string folder = "../models"; 
+	std::string fullpath = folder + "/" + filename;
+    std::ifstream file(fullpath);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return -1;
+    }
+
+    std::string line;
+    if (!std::getline(file, line)) {
+        std::cerr << "Error reading file: " << filename << std::endl;
+        return -1;
+    }
+
+    std::istringstream headerStream(line);
+    int numVertices = 0, numTriangles = 0;
+    char comma = ',';
+
+    if (!(headerStream >> numVertices >> comma >> numTriangles)) {
+        std::cerr << "Error parsing header in file: " << filename << std::endl;
+        return -1;
+    }
+    this->vertices.reserve(numVertices);
+    this->triangles.reserve(numTriangles * 3);
+
+    for (int i = 0; i < numVertices; ++i) {
+        if (!std::getline(file, line)) {
+            std::cerr << "Error reading vertex data in file: " << filename << std::endl;
+            return -1;
+        }
+        std::istringstream vertexStream(line);
+        float x = 0.0f, y = 0.0f, z = 0.0f;
+        if (!(vertexStream >> x >> comma >> y >> comma >> z)) {
+            std::cerr << "Error parsing vertex data in file: " << filename << std::endl;
+            return -1;
+        }
+        this->vertices.emplace_back(std::make_unique<Vertex>(x, y, z));
+    }
+    for (int i = 0; i < numTriangles; ++i) {
+        if (!std::getline(file, line)) {
+            std::cerr << "Error reading triangle data in file: " << filename << std::endl;
+            return -1;
+        }
+        std::istringstream triangleStream(line);
+        int v1 = 0, v2 = 0, v3 = 0;
+        if (!(triangleStream >> v1 >> comma >> v2 >> comma >> v3)) {
+            std::cerr << "Error parsing triangle data in file: " << filename << std::endl;
+            return -1;
+        }
+        this->triangles.push_back(v1);
+        this->triangles.push_back(v2);
+        this->triangles.push_back(v3);
+	}
+	return 0;
+}
