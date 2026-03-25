@@ -1,6 +1,0 @@
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/tinyxml.dir
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/common.dir
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/generator.dir
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/engine.dir
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/edit_cache.dir
-/home/rui/Documents/Trabalho CG/build/CMakeFiles/rebuild_cache.dir

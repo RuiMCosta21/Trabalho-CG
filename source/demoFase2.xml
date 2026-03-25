@@ -1,0 +1,36 @@
+<world>
+    <window width="512" height="512" />
+    <camera>
+        <position x="5" y="5" z="5" />
+        <lookAt x="0" y="0" z="0" />
+        <up x="0" y="1" z="0" />
+        <projection fov="100" near="0.001" far="20" />
+    </camera>
+    <group>
+    <!-- Sol ./generator sphere 10 10 10 sun.3d -->
+        <transform>
+            <translate x ="0" y ="0" z ="0"/>
+        </transform>
+        <models>
+            <model file="sun.3d"/>
+        </models>
+        <group>
+        <!-- Mercúrio ./generator sphere 0.0698 10 10 mercury.3d -->
+            <transform>
+                <translate x = "10.083163" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="mercury.3d"/>
+            </models>
+                <group>
+                <!-- Vénus ./generator sphere 0.1738 10 10 venus.3d -->
+                    <transform>
+                        <translate x = "0.155384" y = "0" z = "0"/>
+                    </transform>
+                    <models>
+                        <model file="venus.3d"/>
+                    </models>
+            </group>
+        </group>
+    </group>
+</world>

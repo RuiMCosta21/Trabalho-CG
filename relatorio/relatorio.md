@@ -1,10 +1,15 @@
 <h1 align="center">Computação Gráfica - 2ª Fase</h1>
  
-## Hélder Miguel Cunha Alves - a104609
-## Diogo Luı́s Barros Costa - a100751
-## Rui Mário da Silva Costa - a107316
+### Hélder Miguel Cunha Alves - a104609
+### Diogo Luı́s Barros Costa - a100751
+### Rui Mário da Silva Costa - a107316
 
-## 1. Atualização do estado interno da aplicação engine
+
+## 1. Representação das transformações
+
+&nbsp;&nbsp;&nbsp;&nbsp;Representamos em memória as transformações de cada grupo acumulando-as numa única matriz, o que nos permite, no momento de renderização, aplicá-las simultaneamente.
+
+## 2. Atualização do estado interno da aplicação engine
 
 &nbsp;&nbsp;&nbsp;&nbsp;De maneira a acomodar a informação adicionada ao ficheiro de configuração, atualizamos a nossa aplicação para tratar cada grupo como um objeto individual.
 &nbsp;&nbsp;&nbsp;&nbsp;Um objeto Grupo é constituído pelos os seguintes parâmetros:
@@ -18,10 +23,6 @@
   <img src="RoseTreeEx.png" alt="Rose Tree">
   <figcaption align="center">Figura 1: Representação da hierarquia de grupos <em>(imagem gerada com o auxílio de IA)</em> </figcaption>
 </figure>
-
-## 2. Representação das transformações
-
-&nbsp;&nbsp;&nbsp;&nbsp;Representamos em memória as transformações de cada grupo acumulando-as numa única matriz, o que nos permite, no momento de renderização, aplicá-las simultaneamente.
 
 ## 3. Renderização da cena
 
