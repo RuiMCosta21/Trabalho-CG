@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/rui/Documents/Trabalho CG"
+    "cmake.sourceDirectory": "/home/rui/Documents/Trabalho CG",
+    "cmake.ignoreCMakeListsMissing": true
 }

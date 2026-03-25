@@ -7,11 +7,11 @@
 
 ## 1. Representação das transformações
 
-&nbsp;&nbsp;&nbsp;&nbsp;Representamos em memória as transformações de cada grupo acumulando-as numa única matriz, o que nos permite, no momento de renderização, aplicá-las simultaneamente.
+&nbsp;&nbsp;&nbsp;&nbsp;Representamos em memória as transformações de cada grupo acumulando-as numa única matriz. Para este efeito implementamos uma tradução direta entre os valores das coordenadas das transformções lidos no ficheiro de configuração e as suas representações matriciais (como lecionado nas aulas). Esta abordagem permite aplicá-las numa única instrução no momento de renderização, bem como poupar na memória utilizada.
 
 ## 2. Atualização do estado interno da aplicação engine
 
-&nbsp;&nbsp;&nbsp;&nbsp;De maneira a acomodar a informação adicionada ao ficheiro de configuração, atualizamos a nossa aplicação para tratar cada grupo como um objeto individual.
+&nbsp;&nbsp;&nbsp;&nbsp;De maneira a acomodar a informação adicionada ao ficheiro de configuração, atualizamos a nossa aplicação para tratar cada grupo como um objeto individual.  
 &nbsp;&nbsp;&nbsp;&nbsp;Um objeto Grupo é constituído pelos os seguintes parâmetros:
 - Uma matriz 4x4 que representa as suas transformações (translação, rotação e escala);
 - Um vetor com os modelos;
