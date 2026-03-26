@@ -1,36 +1,108 @@
 <world>
     <window width="512" height="512" />
     <camera>
-        <position x="5" y="5" z="5" />
+        <position x="500" y="100" z="100" />
         <lookAt x="0" y="0" z="0" />
         <up x="0" y="1" z="0" />
-        <projection fov="100" near="0.001" far="20" />
+        <projection fov="100" near="100.0" far="10000.0"/>
     </camera>
+    <!-- Sol ./generator sphere 15 10 10 sun.3d -->
     <group>
-    <!-- Sol ./generator sphere 10 10 10 sun.3d -->
         <transform>
             <translate x ="0" y ="0" z ="0"/>
         </transform>
         <models>
             <model file="sun.3d"/>
         </models>
+        <!-- Mercúrio ./generator sphere 2.45 10 10 mercury.3d -->
         <group>
-        <!-- Mercúrio ./generator sphere 0.0698 10 10 mercury.3d -->
             <transform>
-                <translate x = "10.083163" y = "0" z = "0"/>
+                <translate x = "68" y = "0" z = "0"/>
             </transform>
             <models>
                 <model file="mercury.3d"/>
             </models>
-                <group>
-                <!-- Vénus ./generator sphere 0.1738 10 10 venus.3d -->
-                    <transform>
-                        <translate x = "0.155384" y = "0" z = "0"/>
-                    </transform>
-                    <models>
-                        <model file="venus.3d"/>
-                    </models>
+        </group>
+        <!-- Vénus ./generator sphere 6.05 10 10 venus.3d -->
+        <group>
+            <transform>
+                <translate x = "118" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="venus.3d"/>
+            </models>
+        </group>
+        <!-- Terra ./generator sphere 6.40 10 10 earth.3d -->
+        <group>
+            <transform>
+                <translate x = "160" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="earth.3d"/>
+            </models>
+            <group>
+            <!-- Lua ./generator sphere 1.70 10 10 moon.3d -->
+                <transform>
+                    <translate x = "1.023" y = "0" z = "0"/>
+                </transform>
+                <models>
+                    <model file="moon.3d"/>
+                </models>
             </group>
+        </group>
+        <!-- Marte ./generator sphere 3.40 10 10 mars.3d -->
+        <group>
+            <transform>
+                <translate x = "240" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="mars.3d"/>
+            </models>
+        </group>
+        <!-- Júpiter ./generator sphere 10.0 10 10 jupiter.3d -->
+        <group>
+            <transform>
+                <translate x = "355" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="jupiter.3d"/>
+            </models>
+        </group>
+        <!-- Saturno ./generator sphere 8.50 10 10 saturn.3d -->
+        <group>
+            <transform>
+                <translate x = "525" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="saturn.3d"/>
+            </models>
+            <!-- Anel ./generator disk 9 15 10 saturn_ring.3d -->
+            <group>
+                <transform>
+                    <rotate angle="20" x="1" y ="0" z = "0"/>
+                </transform>
+                <models>
+                    <model file="saturn_ring.3d"/>
+                </models>
+            </group>    
+        </group>
+        <!-- Urano ./generator sphere 2.60 10 10 uranus.3d -->
+        <group>
+            <transform>
+                <translate x = "700" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="uranus.3d"/>
+            </models>
+        </group>
+        <!-- Neptuno ./generator sphere 2.475 10 10 neptune.3d -->
+        <group>
+            <transform>
+                <translate x = "900" y = "0" z = "0"/>
+            </transform>
+            <models>
+                <model file="neptune.3d"/>
+            </models>
         </group>
     </group>
 </world>

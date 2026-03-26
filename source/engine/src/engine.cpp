@@ -117,7 +117,7 @@ void renderScene(void) {
 
 void processKeys(unsigned char c, int xx, int yy) {
 	const float angle_step = 0.1f;  // Passo de rotação em radianos (~5.7 graus)
-	const float radius_step = 0.1f; // Passo para zoom
+	const float radius_step = 1.0f; // Passo para zoom
 
 	switch(c) {
 		case 'a':  // Rodar para a esquerda
@@ -165,7 +165,10 @@ int main(int argc, char** argv) {
 	
     const char* xmlFile = argv[1];
 
-	state.loadConfig(xmlFile);
+	if(state.loadConfig(xmlFile) == 1){
+		std::cerr << "Aborting...\n";
+		return 1;
+	}
 
 	// Calcular a posição inicial da câmera em coordenadas esféricas
 	float dx = state.position_x - state.lookAt_x;

@@ -15,7 +15,7 @@ int main(const int argc, char** argv){
 
 	std::string shapeType = argv[1];
 
-	if(shapeType != "plane" && shapeType != "box" && shapeType != "sphere" && shapeType != "cone"){
+	if(shapeType != "plane" && shapeType != "disk" && shapeType != "box" && shapeType != "sphere" && shapeType != "cone"){
 		std::cerr << "Error: Invalid shape type '" << shapeType << "'.\n" << instructions;
 		return 1;
 	}
@@ -27,6 +27,15 @@ int main(const int argc, char** argv){
 		Model model;
 		model.generatePlane(stof(argv[2]), stoi(argv[3]));
 		model.writeToFile(argv[4]);
+	}
+	if (shapeType == "disk") {
+		if (argc != 6) {
+			std::cerr << "Error: Invalid number of arguments for disk.\n";
+			return 1;
+		}
+		Model model;
+		model.generateDisk(stof(argv[2]), stoi(argv[3]), stoi(argv[4]));
+		model.writeToFile(argv[5]);
 	}
 	if (shapeType == "box") {
 		if (argc != 5) {

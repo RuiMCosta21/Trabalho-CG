@@ -45,6 +45,42 @@ void Model::generatePlane(float dimension, int divisions) {
 		}
 	}
 }
+
+// gerado usando uma recriação do GL_TRIANGLESTRIP enrolada num círculo
+void Model::generateDisk(float innerRadius, float outerRadius, int slices) {
+    this->clear();
+    float angleStep = (2.0f * M_PI) / slices;
+
+    // 1. Gerar todos os vértices (2 por slice: um interno e um externo)
+    for (int i = 0; i <= slices; i++) {
+        float currentAngle = i * angleStep;
+        float c = cos(currentAngle);
+        float s = sin(currentAngle);
+
+        // Vértice Interno
+        this->vertices.push_back(std::make_unique<Vertex>(innerRadius * c, 0.0f, innerRadius * s));
+        // Vértice Externo
+        this->vertices.push_back(std::make_unique<Vertex>(outerRadius * c, 0.0f, outerRadius * s));
+    }
+
+    // 2. Gerar os triângulos conectando os índices
+    // Cada "quadrado" entre dois raios é composto por dois triângulos
+    for (int i = 0; i < slices; i++) {
+        int innerCurrent = 2 * i;
+        int outerCurrent = 2 * i + 1;
+        int innerNext    = 2 * (i + 1);
+        int outerNext    = 2 * (i + 1) + 1;
+
+		// Face de cima 
+		this->pushTriangle(innerCurrent, outerCurrent, innerNext);
+		this->pushTriangle(outerCurrent, outerNext, innerNext);
+
+		// Face de baixo
+		this->pushTriangle(innerCurrent, innerNext, outerCurrent);
+		this->pushTriangle(outerCurrent, innerNext, outerNext);
+    }
+}
+
 /* Comentários gerais:
 	variável 'mapped_devices' permite indexação por matriz ser overlapping
 		- vértice (0,0) da face traseira de uma box com 3 divisões, sendo o primeiro desta face, é na realidade o 17º do modelo
